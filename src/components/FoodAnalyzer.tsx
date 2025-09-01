@@ -1,9 +1,10 @@
 import { useState, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Camera, Upload, Loader2, X } from 'lucide-react';
+import { Camera, Upload, Loader2, X, Image as ImageIcon } from 'lucide-react';
 import { analyzeFoodImage, type NutritionData } from '@/lib/food-recognition';
 import { useToast } from '@/hooks/use-toast';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface FoodAnalyzerProps {
   onAnalysisComplete?: (data: NutritionData) => void;
@@ -97,99 +98,201 @@ const FoodAnalyzer = ({ onAnalysisComplete }: FoodAnalyzerProps) => {
   };
 
   return (
-    <Card className="glass-card">
-      <CardContent className="p-6">
-        <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold mb-2">Analyze Your Food</h2>
-          <p className="text-muted-foreground">
-            Upload or take a photo to get instant nutrition information
-          </p>
-        </div>
-
-        {selectedImage ? (
-          <div className="relative mb-4">
-            <img 
-              src={selectedImage} 
-              alt="Selected food" 
-              className="w-full h-64 object-cover rounded-lg"
-            />
-            <Button
-              variant="secondary"
-              size="sm"
-              className="absolute top-2 right-2"
-              onClick={clearImage}
-              disabled={isAnalyzing}
-            >
-              <X className="w-4 h-4" />
-            </Button>
-            {isAnalyzing && (
-              <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
-                <div className="text-center">
-                  <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-2" />
-                  <p className="text-white font-medium">Analyzing food...</p>
-                </div>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div
-            className={`
-              border-2 border-dashed rounded-xl p-12 text-center transition-all duration-200
-              ${dragActive ? 'border-primary bg-primary/10' : 'border-border hover:border-primary/50'}
-            `}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <Card className="glass-card overflow-hidden">
+        <CardContent className="p-8">
+          <motion.div 
+            className="text-center mb-8"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
           >
-            <div className="max-w-sm mx-auto">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/20 flex items-center justify-center">
-                <Camera className="w-8 h-8 text-primary" />
-              </div>
-              
-              <h3 className="text-lg font-semibold mb-2">Drop your food photo here</h3>
-              <p className="text-muted-foreground text-sm mb-6">
-                or click to browse from your device
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileInputChange}
-                  className="hidden"
-                  id="food-upload"
-                />
-                <label htmlFor="food-upload">
-                  <Button variant="default" className="gradient-primary shadow-primary" asChild>
-                    <span className="cursor-pointer">
-                      <Upload className="w-4 h-4 mr-2" />
-                      Upload Photo
-                    </span>
-                  </Button>
-                </label>
+            <h2 className="text-3xl font-bold mb-3 gradient-text">Analyze Your Food</h2>
+            <p className="text-muted-foreground text-lg">
+              Upload or take a photo to get instant nutrition information
+            </p>
+          </motion.div>
+
+          <AnimatePresence mode="wait">
+            {selectedImage ? (
+              <motion.div
+                key="image-preview"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.3 }}
+                className="relative mb-4"
+              >
+                <div className="relative overflow-hidden rounded-2xl">
+                  <img 
+                    src={selectedImage} 
+                    alt="Selected food" 
+                    className="w-full h-80 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                </div>
                 
-                <input
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  onChange={handleFileInputChange}
-                  className="hidden"
-                  id="food-camera"
-                />
-                <label htmlFor="food-camera">
-                  <Button variant="secondary" asChild>
-                    <span className="cursor-pointer">
-                      <Camera className="w-4 h-4 mr-2" />
-                      Take Photo
-                    </span>
-                  </Button>
-                </label>
-              </div>
-            </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-black/70 transition-colors"
+                  onClick={clearImage}
+                  disabled={isAnalyzing}
+                >
+                  <X className="w-5 h-5" />
+                </motion.button>
+                
+                <AnimatePresence>
+                  {isAnalyzing && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="absolute inset-0 bg-black/60 backdrop-blur-sm rounded-2xl flex items-center justify-center"
+                    >
+                      <motion.div 
+                        className="text-center bg-black/40 backdrop-blur-md rounded-2xl p-8 border border-white/10"
+                        initial={{ scale: 0.8, y: 20 }}
+                        animate={{ scale: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                      >
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                          className="w-12 h-12 mx-auto mb-4"
+                        >
+                          <Loader2 className="w-12 h-12 text-primary" />
+                        </motion.div>
+                        <h3 className="text-white font-semibold text-lg mb-2">Analyzing Food...</h3>
+                        <p className="text-white/80 text-sm">Our AI is identifying nutrients</p>
+                      </motion.div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="upload-area"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4 }}
+              >
+                <motion.div
+                  className={`
+                    relative border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 overflow-hidden
+                    ${dragActive 
+                      ? 'border-primary bg-primary/10 scale-[1.02]' 
+                      : 'border-border hover:border-primary/50 hover:bg-primary/5'
+                    }
+                  `}
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  whileHover={{ scale: 1.01 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                >
+                  {/* Background pattern */}
+                  <div className="absolute inset-0 opacity-5">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-primary/20" />
+                  </div>
+                  
+                  <div className="relative max-w-md mx-auto">
+                    <motion.div 
+                      className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-primary/20 flex items-center justify-center relative"
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    >
+                      <motion.div
+                        animate={dragActive ? { scale: [1, 1.2, 1] } : {}}
+                        transition={{ duration: 0.6, repeat: dragActive ? Infinity : 0 }}
+                      >
+                        <ImageIcon className="w-10 h-10 text-primary" />
+                      </motion.div>
+                      
+                      {/* Floating icons animation */}
+                      <motion.div
+                        className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-primary/30 flex items-center justify-center"
+                        animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }}
+                        transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+                      >
+                        <Camera className="w-3 h-3 text-primary" />
+                      </motion.div>
+                    </motion.div>
+                    
+                    <motion.h3 
+                      className="text-2xl font-semibold mb-3"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.3 }}
+                    >
+                      {dragActive ? 'Drop it here!' : 'Drop your food photo here'}
+                    </motion.h3>
+                    
+                    <motion.p 
+                      className="text-muted-foreground text-base mb-8"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.4 }}
+                    >
+                      or click to browse from your device
+                    </motion.p>
+                    
+                    <motion.div 
+                      className="flex flex-col sm:flex-row gap-4 justify-center"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                    >
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileInputChange}
+                        className="hidden"
+                        id="food-upload"
+                      />
+                      <label htmlFor="food-upload">
+                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                          <Button variant="default" className="gradient-primary shadow-primary px-6 py-3" asChild>
+                            <span className="cursor-pointer">
+                              <Upload className="w-4 h-4 mr-2" />
+                              Upload Photo
+                            </span>
+                          </Button>
+                        </motion.div>
+                      </label>
+                      
+                      <input
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        onChange={handleFileInputChange}
+                        className="hidden"
+                        id="food-camera"
+                      />
+                      <label htmlFor="food-camera">
+                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                          <Button variant="secondary" className="px-6 py-3" asChild>
+                            <span className="cursor-pointer">
+                              <Camera className="w-4 h-4 mr-2" />
+                              Take Photo
+                            </span>
+                          </Button>
+                        </motion.div>
+                      </label>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
 
