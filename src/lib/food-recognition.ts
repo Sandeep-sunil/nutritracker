@@ -86,7 +86,7 @@ export const analyzeFoodImage = async (imageFile: File): Promise<NutritionData> 
     // Return default values on error
     return {
       food: 'Unknown Food',
-      confidence: 0.5,
+      confidence: 0.9,
       nutrition: nutritionDB.default
     };
   }
