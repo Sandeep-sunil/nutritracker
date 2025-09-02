@@ -43,15 +43,18 @@ const Index = () => {
               transition={{ duration: 0.6, delay: 0.4 }}
             >
               <motion.div 
-                className="w-20 h-20 rounded-3xl gradient-primary shadow-primary flex items-center justify-center relative"
+                className="w-20 h-20 rounded-3xl gradient-primary shadow-primary flex items-center justify-center relative"  
                 whileHover={{ scale: 1.1, rotate: 5 }}
-                transition={{ type: "spring", stiffness: 300 }}
                 animate={{ 
                   boxShadow: [
-                    "0 4px 14px 0 hsl(16 100% 66% / 0.25)",
-                    "0 8px 28px 0 hsl(16 100% 66% / 0.35)",
-                    "0 4px 14px 0 hsl(16 100% 66% / 0.25)"
+                    "0 4px 14px 0 hsl(12 100% 62% / 0.25)",
+                    "0 8px 28px 0 hsl(12 100% 62% / 0.35)"
                   ]
+                }}
+                transition={{ 
+                  type: "spring", 
+                  stiffness: 300,
+                  boxShadow: { duration: 2, repeat: Infinity }
                 }}
               >
                 <Dumbbell className="w-10 h-10 text-white" />

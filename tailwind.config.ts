@@ -58,6 +58,7 @@ export default {
 					foreground: 'hsl(var(--card-foreground))'
 				},
 				glass: 'hsl(var(--glass))',
+				calories: 'hsl(var(--calories))',
 				protein: 'hsl(var(--protein))',
 				carbs: 'hsl(var(--carbs))',
 				fats: 'hsl(var(--fats))',

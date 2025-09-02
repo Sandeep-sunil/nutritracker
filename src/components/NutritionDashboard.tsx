@@ -212,6 +212,7 @@ const NutritionDashboard = ({
                         >
                           <span className="text-xl">{macro.emoji}</span>
                           <motion.div
+                            key={`${macro.name}-pulse-${index}`}
                             className="absolute inset-0 rounded-2xl"
                             animate={{
                               boxShadow: [
