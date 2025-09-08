@@ -1,16 +1,21 @@
-// api/hello.js
-module.exports = (req, res) => {
-  try {
-    console.log('API function executed');
+from flask import Flask, request, jsonify
 
-    if (req.method === 'POST') {
-      const data = req.body || {};
-      res.status(200).json({ message: 'POST received', data });
-    } else {
-      res.status(200).json({ message: 'Hello from Lovable React API!' });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Server error' });
-  }
-};
+app = Flask(__name__)
+
+# Your fixed API key (generate once and keep secret)
+MY_API_KEY = "sandeep-api-5343"
+
+@app.route("/my-endpoint", methods=["GET"])
+def my_endpoint():
+    # Get API key from request header
+    api_key = request.headers.get("x-api-key")
+
+    if api_key != MY_API_KEY:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    # Example response if authorized
+    return jsonify({"message": "Hello Sandeep! ✅", "status": "success"})
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
